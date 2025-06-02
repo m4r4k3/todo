@@ -1,34 +1,182 @@
 package com.mycompany.todo.view;
 
+import com.mycompany.todo.model.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TextField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+
+import java.io.IOException;
 
 public class TasksView {
 
     @FXML
-    private ListView<String> taskList;
+    private ListView<Task> taskList;
 
-    private ObservableList<String> tasks = FXCollections.observableArrayList();
+    @FXML
+    private TextField searchInput;
+
+    @FXML
+    private ComboBox<String> filterComboBox;
+
+    private ObservableList<Task> allTasks = FXCollections.observableArrayList();
+    private ObservableList<Task> filteredTasks = FXCollections.observableArrayList();
+
+    public enum FilterType {
+        ALL, COMPLETED, UNCOMPLETED
+    }
+
+    private FilterType currentFilter = FilterType.ALL;
 
     @FXML
     public void initialize() {
-        taskList.setItems(tasks);
+        taskList.setItems(filteredTasks);
+
+        // Setup filter combo box
+        filterComboBox.setItems(FXCollections.observableArrayList("All", "Completed", "Uncompleted"));
+        filterComboBox.setValue("All");
+
+        // Setup custom cell factory for checkboxes
+        taskList.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
+            @Override
+            public ListCell<Task> call(ListView<Task> param) {
+                return new TaskListCell();
+            }
+        });
+
+        // Initially show all tasks
+        applyFilters();
     }
 
     @FXML
-    private TextField taskInput;
+    private void handleSearch() {
+        applyFilters();
+    }
 
     @FXML
-    private void handleAddTask() {
-        String taskText = taskInput.getText().trim();
-        if (!taskText.isEmpty()) {
-            tasks.add(taskText);
-            taskInput.clear();
+    private void handleFilterChange() {
+        String selectedFilter = filterComboBox.getValue();
+        switch (selectedFilter) {
+            case "All":
+                currentFilter = FilterType.ALL;
+                break;
+            case "Completed":
+                currentFilter = FilterType.COMPLETED;
+                break;
+            case "Uncompleted":
+                currentFilter = FilterType.UNCOMPLETED;
+                break;
+        }
+        applyFilters();
+    }
+
+    private void applyFilters() {
+        String searchQuery = searchInput.getText();
+        filteredTasks.clear();
+
+        for (Task task : allTasks) {
+            boolean matchesSearch = searchQuery == null || searchQuery.trim().isEmpty() || task.matches(searchQuery);
+            boolean matchesFilter = false;
+
+            switch (currentFilter) {
+                case ALL:
+                    matchesFilter = true;
+                    break;
+                case COMPLETED:
+                    matchesFilter = task.isCompleted();
+                    break;
+                case UNCOMPLETED:
+                    matchesFilter = !task.isCompleted();
+                    break;
+            }
+
+            if (matchesSearch && matchesFilter) {
+                filteredTasks.add(task);
+            }
         }
     }
 
+    @FXML
+    private void handleShowAddTaskForm() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/todo/Views/TaskForm.fxml"));
+            Parent root = loader.load();
+
+            AddTaskFormView controller = loader.getController();
+            controller.setTasksView(this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Add New Task");
+            stage.setScene(new Scene(root, 400, 350));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addTask(Task task) {
+        allTasks.add(task);
+        applyFilters(); // Refresh the filtered list
+    }
+
+    public void refreshView() {
+        applyFilters();
+    }
+
+    // Custom ListCell class for displaying tasks with checkboxes
+    private class TaskListCell extends ListCell<Task> {
+        private HBox content;
+        private CheckBox checkBox;
+        private Label taskLabel;
+
+        public TaskListCell() {
+            super();
+            checkBox = new CheckBox();
+            taskLabel = new Label();
+            content = new HBox(10);
+            content.getChildren().addAll(checkBox, taskLabel);
+            content.setStyle("-fx-alignment: center-left; -fx-padding: 5;");
+
+            checkBox.setOnAction(event -> {
+                Task task = getItem();
+                if (task != null) {
+                    task.setCompleted(checkBox.isSelected());
+                    updateTaskAppearance();
+                    // Refresh the view to apply any active filters
+                    applyFilters();
+                }
+            });
+        }
+
+        @Override
+        protected void updateItem(Task task, boolean empty) {
+            super.updateItem(task, empty);
+            if (empty || task == null) {
+                setGraphic(null);
+            } else {
+                checkBox.setSelected(task.isCompleted());
+                taskLabel.setText(task.getTitle());
+                updateTaskAppearance();
+                setGraphic(content);
+            }
+        }
+
+        private void updateTaskAppearance() {
+            Task task = getItem();
+            if (task != null && task.isCompleted()) {
+                taskLabel.setStyle("-fx-text-fill: #888; -fx-strikethrough: true;");
+            } else {
+                taskLabel.setStyle("-fx-text-fill: #2c3e50;");
+            }
+        }
+    }
 }

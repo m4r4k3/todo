@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" alignment="TOP_CENTER"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mycompany.todo.view.AddTaskFormView"
+      style="-fx-background-color: #f5f7fa; -fx-border-radius: 12; -fx-background-radius: 12;">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Add New Task"
+           style="-fx-font-size: 22px; -fx-font-weight: 600; -fx-text-fill: #2c3e50; -fx-padding: 0 0 10 0;" />
+
+    <VBox spacing="10">
+        <Label text="Title:" style="-fx-font-size: 14px; -fx-font-weight: 500; -fx-text-fill: #34495e;"/>
+        <TextField fx:id="titleInput" promptText="Enter task title"
+                   style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 12; -fx-border-color: #ddd; -fx-font-size: 14px; -fx-effect: null;"
+        />
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="Description:" style="-fx-font-size: 14px; -fx-font-weight: 500; -fx-text-fill: #34495e;"/>
+        <TextArea fx:id="descriptionInput" promptText="Enter task description"
+                  style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 12; -fx-border-color: #ddd; -fx-font-size: 14px; -fx-effect: null;"
+                  prefRowCount="4"
+        />
+    </VBox>
+
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Save Task" onAction="#handleSaveTask"
+                style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand; -fx-effect: null;"/>
+
+        <Button text="Cancel" onAction="#handleCancel"
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand; -fx-effect: null;"/>
+    </HBox>
+</VBox>
