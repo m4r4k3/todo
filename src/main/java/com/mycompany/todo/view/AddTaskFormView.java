@@ -1,5 +1,6 @@
 package com.mycompany.todo.view;
 
+import jakarta.persistence.EntityManager;
 import com.mycompany.todo.model.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -20,6 +21,7 @@ public class AddTaskFormView {
         this.tasksView = tasksView;
     }
 
+
     @FXML
     private void handleSaveTask() {
         String title = titleInput.getText().trim();
@@ -27,6 +29,12 @@ public class AddTaskFormView {
 
         if (!title.isEmpty()) {
             Task newTask = new Task(title, description);
+
+            EntityManager em = com.mycompany.todo.Util.EntityManager.getEntityManager();
+            em.getTransaction().begin();
+            em.persist(newTask);
+            em.getTransaction().commit();
+            em.close();
             tasksView.addTask(newTask);
             closeWindow();
         }

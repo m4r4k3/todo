@@ -1,5 +1,6 @@
 package com.mycompany.todo.view;
 
+import com.mycompany.todo.Util.EntityManager;
 import com.mycompany.todo.model.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,8 +38,11 @@ public class TasksView {
 
     @FXML
     public void initialize() {
-        taskList.setItems(filteredTasks);
+        var em = EntityManager.getEntityManager();
+        allTasks.setAll(em.createQuery("SELECT t FROM Task t", Task.class).getResultList());
+        em.close();
 
+        taskList.setItems(filteredTasks);
         // Setup filter combo box with French labels
         filterComboBox.setItems(FXCollections.observableArrayList("Tout", "Terminées", "Non terminées"));
         filterComboBox.setValue("Non terminées");
@@ -144,11 +148,19 @@ public class TasksView {
                 Task task = getItem();
                 if (task != null) {
                     task.setCompleted(checkBox.isSelected());
+
+                    // Persist update in DB
+                    var em = EntityManager.getEntityManager();
+                    em.getTransaction().begin();
+                    em.merge(task); // Use merge to update existing entity
+                    em.getTransaction().commit();
+                    em.close();
+
                     updateTaskAppearance();
-                    // Refresh the view to apply any active filters
                     applyFilters();
                 }
             });
+
         }
 
         @Override

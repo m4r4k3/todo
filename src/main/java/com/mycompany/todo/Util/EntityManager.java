@@ -12,7 +12,7 @@ import java.net.URL;
 
 public class EntityManager {
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("TodoDb");
+            Persistence.createEntityManagerFactory("TodoDB");
 
     public static jakarta.persistence.EntityManager getEntityManager() {
         return emf.createEntityManager();
