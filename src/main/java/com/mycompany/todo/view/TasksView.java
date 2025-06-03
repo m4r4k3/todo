@@ -33,27 +33,21 @@ public class TasksView {
         ALL, COMPLETED, UNCOMPLETED
     }
 
-    private FilterType currentFilter = FilterType.ALL;
+    private FilterType currentFilter = FilterType.UNCOMPLETED;
 
     @FXML
     public void initialize() {
         taskList.setItems(filteredTasks);
 
-        // Setup filter combo box
-        filterComboBox.setItems(FXCollections.observableArrayList("All", "Completed", "Uncompleted"));
-        filterComboBox.setValue("All");
+        // Setup filter combo box with French labels
+        filterComboBox.setItems(FXCollections.observableArrayList("Tout", "Terminées", "Non terminées"));
+        filterComboBox.setValue("Non terminées");
 
-        // Setup custom cell factory for checkboxes
-        taskList.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
-            @Override
-            public ListCell<Task> call(ListView<Task> param) {
-                return new TaskListCell();
-            }
-        });
+        taskList.setCellFactory(param -> new TaskListCell());
 
-        // Initially show all tasks
         applyFilters();
     }
+
 
     @FXML
     private void handleSearch() {
@@ -64,13 +58,13 @@ public class TasksView {
     private void handleFilterChange() {
         String selectedFilter = filterComboBox.getValue();
         switch (selectedFilter) {
-            case "All":
+            case "Tout":
                 currentFilter = FilterType.ALL;
                 break;
-            case "Completed":
+            case "Terminées":
                 currentFilter = FilterType.COMPLETED;
                 break;
-            case "Uncompleted":
+            case "Non terminées":
                 currentFilter = FilterType.UNCOMPLETED;
                 break;
         }

@@ -4,38 +4,58 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox spacing="20" alignment="TOP_CENTER"
+<VBox spacing="15" alignment="TOP_CENTER"
       xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.mycompany.todo.view.AddTaskFormView"
-      style="-fx-background-color: #f5f7fa; -fx-border-radius: 12; -fx-background-radius: 12;">
+      style="-fx-background-color: linear-gradient(to bottom, #ffffff, #fafbfc); -fx-border-radius: 12; -fx-background-radius: 12;"
+      prefHeight="400" prefWidth="350">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Add New Task"
-           style="-fx-font-size: 22px; -fx-font-weight: 600; -fx-text-fill: #2c3e50; -fx-padding: 0 0 10 0;" />
+    <!-- Header Section -->
+    <VBox spacing="4" alignment="CENTER">
+        <Label text="Créer une nouvelle tâche"
+               style="-fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: #1a202c; -fx-font-family: 'SF Pro Display', 'Segoe UI', system-ui;" />
+        <Label text="Ajoutez des détails pour mieux organiser votre travail"
+               style="-fx-font-size: 12px; -fx-font-weight: 400; -fx-text-fill: #718096; -fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui;" />
+    </VBox>
 
-    <VBox spacing="10">
-        <Label text="Title:" style="-fx-font-size: 14px; -fx-font-weight: 500; -fx-text-fill: #34495e;"/>
-        <TextField fx:id="titleInput" promptText="Enter task title"
-                   style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 12; -fx-border-color: #ddd; -fx-font-size: 14px; -fx-effect: null;"
+    <!-- Title Input Section -->
+    <VBox spacing="6" alignment="TOP_LEFT">
+        <Label text="Titre de la tâche"
+               style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #2d3748; -fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui;"/>
+        <TextField fx:id="titleInput" promptText="Entrez un titre clair et descriptif..."
+                   style="-fx-background-color: #ffffff; -fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 12; -fx-border-color: #e2e8f0; -fx-border-width: 1.5; -fx-font-size: 12px; -fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui; -fx-prompt-text-fill: #a0aec0;"
+                   prefHeight="35"
         />
     </VBox>
 
-    <VBox spacing="10">
-        <Label text="Description:" style="-fx-font-size: 14px; -fx-font-weight: 500; -fx-text-fill: #34495e;"/>
-        <TextArea fx:id="descriptionInput" promptText="Enter task description"
-                  style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 12; -fx-border-color: #ddd; -fx-font-size: 14px; -fx-effect: null;"
-                  prefRowCount="4"
+    <!-- Description Input Section -->
+    <VBox spacing="6" alignment="TOP_LEFT">
+        <Label text="Description"
+               style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #2d3748; -fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui;"/>
+        <TextArea fx:id="descriptionInput" promptText="Ajoutez plus de détails sur cette tâche..."
+                  style="-fx-background-color: #ffffff; -fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 10 12; -fx-border-color: #e2e8f0; -fx-border-width: 1.5; -fx-font-size: 12px; -fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui; -fx-prompt-text-fill: #a0aec0;"
+                  prefRowCount="2"
+                  prefHeight="60"
+                  wrapText="true"
         />
     </VBox>
 
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Save Task" onAction="#handleSaveTask"
-                style="-fx-background-color: #000000; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand; -fx-effect: null;"/>
+    <!-- Action Buttons -->
+    <HBox spacing="10" alignment="CENTER">
+        <VBox.margin>
+            <Insets top="5" right="0" bottom="0" left="0" />
+        </VBox.margin>
 
-        <Button text="Cancel" onAction="#handleCancel"
-                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand; -fx-effect: null;"/>
+        <Button text="Enregistrer" onAction="#handleSaveTask"
+                style="-fx-background-color: linear-gradient(to right, #48bb78, #38a169); -fx-text-fill: white; -fx-font-weight: 600; -fx-font-size: 12px; -fx-background-radius: 8; -fx-padding: 10 18; -fx-cursor: hand; -fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui;"
+                prefWidth="110" prefHeight="32"/>
+
+        <Button text="Annuler" onAction="#handleCancel"
+                style="-fx-background-color: #ffffff; -fx-text-fill: #4a5568; -fx-font-weight: 500; -fx-font-size: 12px; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-padding: 10 18; -fx-cursor: hand; -fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui;"
+                prefWidth="110" prefHeight="32"/>
     </HBox>
 </VBox>
