@@ -5,9 +5,12 @@ import com.mycompany.todo.model.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class TaskController {
 
@@ -114,6 +117,96 @@ public class TaskController {
         } finally {
             em.close();
         }
+    }
+
+    /**
+     * Validates task input fields
+     * @param title The task title
+     * @param description The task description
+     * @return true if valid, false otherwise
+     */
+    public boolean validateTaskInput(String title, String description) {
+        if (title == null || title.trim().isEmpty()) {
+            showAlert("Erreur de validation", "Le titre est obligatoire.", Alert.AlertType.WARNING);
+            return false;
+        }
+
+        if (title.trim().length() > 255) {
+            showAlert("Erreur de validation", "Le titre ne peut pas dépasser 255 caractères.", Alert.AlertType.WARNING);
+            return false;
+        }
+
+        if (description != null && description.trim().length() > 1000) {
+            showAlert("Erreur de validation", "La description ne peut pas dépasser 1000 caractères.", Alert.AlertType.WARNING);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Shows a confirmation dialog for task deletion
+     * @param task The task to be deleted
+     * @return true if user confirms deletion, false otherwise
+     */
+    public boolean showDeleteConfirmation(Task task) {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirmer la suppression");
+        confirmAlert.setHeaderText("Supprimer la tâche");
+        confirmAlert.setContentText("Êtes-vous sûr de vouloir supprimer cette tâche ?\n\n\"" +
+                task.getTitle() + "\"\n\nCette action ne peut pas être annulée.");
+
+        // Style the confirmation dialog
+        confirmAlert.getDialogPane().setStyle("-fx-font-family: 'SF Pro Text', 'Segoe UI', system-ui;");
+
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
+    /**
+     * Handles successful task actions with callback
+     * @param successMessage The message to display
+     * @param onSuccess Callback to execute after showing success message
+     */
+    public void handleTaskActionSuccess(String successMessage, Runnable onSuccess) {
+        if (onSuccess != null) {
+            onSuccess.run();
+        }
+        showAlert("Succès", successMessage, Alert.AlertType.INFORMATION);
+    }
+
+    /**
+     * Handles task action errors consistently
+     * @param baseMessage The base error message
+     * @param exception The exception that occurred
+     */
+    public void handleTaskActionError(String baseMessage, Exception exception) {
+        showAlert("Erreur", baseMessage + ": " + exception.getMessage(), Alert.AlertType.ERROR);
+        exception.printStackTrace();
+    }
+
+    /**
+     * Performs a task action with consistent error handling
+     * @param action The action to perform
+     * @param successMessage Success message to display
+     * @param errorMessage Base error message for failures
+     * @param onSuccess Callback for successful completion
+     */
+    public void performTaskAction(TaskAction action, String successMessage, String errorMessage, Runnable onSuccess) {
+        try {
+            action.execute();
+            handleTaskActionSuccess(successMessage, onSuccess);
+        } catch (Exception e) {
+            handleTaskActionError(errorMessage, e);
+        }
+    }
+
+    /**
+     * Functional interface for task actions
+     */
+    @FunctionalInterface
+    public interface TaskAction {
+        void execute() throws Exception;
     }
 
     /**

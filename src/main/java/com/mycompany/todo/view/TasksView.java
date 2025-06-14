@@ -112,6 +112,35 @@ public class TasksView {
         }
     }
 
+    /**
+     * Shows the task details window for the given task
+     * @param task The task to show details for
+     */
+    private void showTaskDetails(Task task) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/todo/Views/TaskDetails.fxml"));
+            Parent root = loader.load();
+
+            TaskDetailsView controller = loader.getController();
+            controller.setTask(task);
+            controller.setParentView(this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Détails de la tâche");
+            stage.setScene(new Scene(root, 450, 420));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+
+            // Set the stage reference in the controller so it can close itself
+            controller.setStage(stage);
+
+            stage.showAndWait();
+        } catch (IOException e) {
+            taskController.showAlert("Erreur", "Impossible d'ouvrir les détails de la tâche: " + e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
+    }
+
     public void refreshView() {
         refreshTasksFromDatabase();
         applyFilters();
@@ -190,7 +219,8 @@ public class TasksView {
                             "-fx-background-radius: 8; " +
                             "-fx-border-color: #e2e8f0; " +
                             "-fx-border-width: 1; " +
-                            "-fx-border-radius: 8;"
+                            "-fx-border-radius: 8; " +
+                            "-fx-cursor: hand;"
             );
         }
 
@@ -209,6 +239,24 @@ public class TasksView {
                         // Revert checkbox state
                         checkBox.setSelected(task.isCompleted());
                     }
+                }
+            });
+
+            // Add click handler for the entire cell (excluding checkbox)
+            content.setOnMouseClicked(event -> {
+                if (!event.isConsumed() && getItem() != null) {
+                    // Check if click was not on checkbox area
+                    if (event.getX() > 30) { // Approximate checkbox width + margin
+                        showTaskDetails(getItem());
+                    }
+                }
+            });
+
+            // Prevent text container clicks from being consumed by checkbox
+            textContainer.setOnMouseClicked(event -> {
+                if (getItem() != null) {
+                    showTaskDetails(getItem());
+                    event.consume();
                 }
             });
         }
@@ -264,7 +312,8 @@ public class TasksView {
                                 "-fx-background-radius: 8; " +
                                 "-fx-border-color: #e2e8f0; " +
                                 "-fx-border-width: 1; " +
-                                "-fx-border-radius: 8;"
+                                "-fx-border-radius: 8; " +
+                                "-fx-cursor: hand;"
                 );
             } else {
                 // Reset to normal styles
